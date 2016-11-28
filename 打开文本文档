@@ -1,0 +1,43 @@
+void CReadTextFileDlg::OnBnClickedButton1()  
+{  
+  
+    //------------------------------------------------------------------------------  
+    // CFileDialog类具体详解：http://baike.baidu.com/view/1298552.htm  
+    //------------------------------------------------------------------------------  
+    CFileDialog fDlg(TRUE, _TEXT("txt"), NULL, 4|2,  
+        _TEXT("文本文件(*.txt,*.ini,*.log)|*.txt;*.ini;*.log|全部文件(*.*)|*.*||"));  
+  
+    // 调用 DoModal() 方法来打开对话框  
+    if (fDlg.DoModal() == IDOK)  
+    {  
+        // 设置编辑框1的内容为选择文件的路径  
+        // GetPathName() --> 返回选定文件的完整路径  
+        SetDlgItemText(IDC_EDIT1,fDlg.GetPathName());  
+  
+        //------------------------------------------------------------------------------  
+        // CFile类具体详解：http://baike.baidu.com/view/994710.htm  
+        //------------------------------------------------------------------------------  
+        CFile fFile(fDlg.GetPathName(),CFile::modeRead);  
+  
+        // 因为在Windows下常用的文本保存编码为ANSI  
+        // 而本工程在当初选择的时候选择了Unicode环境  
+        // 所以需要使用CStringA类型的变量。  
+        // CStringA具体详解：http://baike.baidu.com/view/998109.htm  
+        CStringA strFile ;  
+  
+        // 读取打开文件内容  
+        // 第一个参数：读取内容的缓冲区域  
+        // 第二个参数：读取内容的长度  
+        fFile.Read(strFile.GetBufferSetLength(fFile.GetLength()),fFile.GetLength());  
+  
+        // 关闭文件句柄  
+        fFile.Close();  
+  
+        // 释放缓冲区域  
+        strFile.ReleaseBuffer();  
+  
+        // 因环境为Unicdoe的原因，CStringA不可以直接显示到界面控件上  
+        // 所以使用CString转换为Unicdoe字符  
+        SetDlgItemText(IDC_EDIT2,CString(strFile));  
+    }  
+}  
